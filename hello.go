@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Dunkelheit/feedbackapp/model"
 	"github.com/gorilla/mux"
 )
 
@@ -28,16 +29,13 @@ func main() {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome!")
+	card := model.Card{ID: 1, Title: "Hello"}
+	json.NewEncoder(w).Encode(card)
 }
 
 func TodoIndex(w http.ResponseWriter, r *http.Request) {
-	todos := Todos{
-		Todo{Name: "Write presentation"},
-		Todo{Name: "Host meetup"},
-	}
-
-	json.NewEncoder(w).Encode(todos)
+	card := model.Card{ID: 1, Title: "Hello"}
+	json.NewEncoder(w).Encode(card)
 }
 
 func TodoShow(w http.ResponseWriter, r *http.Request) {
