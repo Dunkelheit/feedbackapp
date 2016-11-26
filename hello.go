@@ -1,14 +1,13 @@
 package main
 
 import (
-	"database/sql"
-	"log"
+	"fmt"
 	"net/http"
 
-	"github.com/go-gorp/gorp"
 	_ "github.com/lib/pq"
 
 	"github.com/Dunkelheit/feedbackapp/model"
+	"github.com/astaxie/beego/orm"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
@@ -18,11 +17,6 @@ func ping(c *gin.Context) {
 }
 
 func main() {
-
-	// initialize the DbMap
-	dbmap := initDb()
-	defer dbmap.Db.Close()
-
 	router := gin.Default()
 
 	userRoutes := router.Group("/users")
@@ -53,31 +47,12 @@ func main() {
 	router.Run() // listen and server on 0.0.0.0:8080
 }
 
-func initDb() *gorp.DbMap {
-	// connect to db using standard Go database/sql API
-	// use whatever database/sql driver you wish
-	db, err := sql.Open("postgres", "user=arturo.martinez dbname=feedbackapp sslmode=disable")
-	checkErr(err, "sql.Open failed")
-
-	// construct a gorp DbMap
-	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
-
-	// add a table, setting the table name to 'posts' and
-	// specifying that the Id property is an auto incrementing PK
-	dbmap.AddTableWithName(model.Card{}, "cards").SetKeys(true, "ID")
-	dbmap.AddTableWithName(model.User{}, "users").SetKeys(true, "ID")
-	dbmap.AddTableWithName(model.Review{}, "reviews").SetKeys(true, "ID")
-
-	// create the table. in a production system you'd generally
-	// use a migration tool, or create the tables via scripts
-	err = dbmap.CreateTablesIfNotExists()
-	checkErr(err, "Create tables failed")
-
-	return dbmap
-}
-
-func checkErr(err error, msg string) {
+func init() {
+	orm.RegisterDriver("mysql", orm.DRPostgres)
+	orm.RegisterModel(new(model.Card), new(model.Review), new(model.User))
+	orm.RegisterDataBase("default", "postgres", "sslmode=disable dbname=feedbackapp host=localhost user=arturo.martinez")
+	err := orm.RunSyncdb("default", true, true)
 	if err != nil {
-		log.Fatalln(msg, err)
+		fmt.Println(err)
 	}
 }
