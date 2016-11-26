@@ -1,45 +1,42 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	"github.com/Dunkelheit/feedbackapp/model"
-	"github.com/gorilla/mux"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
-type Todo struct {
-	Name      string    `json:"name"`
-	Completed bool      `json:"completed"`
-	Due       time.Time `json:"due"`
+func ping(c *gin.Context) {
+	card := model.Card{ID: 1, Title: "Hello"}
+	c.JSON(200, card)
 }
-
-type Todos []Todo
 
 func main() {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", Index)
-	router.HandleFunc("/todos", TodoIndex)
-	router.HandleFunc("/todos/{todoId}", TodoShow)
+	router := gin.Default()
 
-	log.Fatal(http.ListenAndServe(":8080", router))
-}
+	userRoutes := router.Group("/users")
+	{
+		userRoutes.POST("", ping)
+		userRoutes.GET("/:userId", ping)
+		userRoutes.PUT("/:userId", ping)
+		userRoutes.DELETE("/:userId", ping)
+	}
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	card := model.Card{ID: 1, Title: "Hello"}
-	json.NewEncoder(w).Encode(card)
-}
+	cardRoutes := router.Group("/cards")
+	{
+		cardRoutes.GET("", ping)
+		cardRoutes.POST("", ping)
+		cardRoutes.PUT("/:cardId", ping)
+		cardRoutes.DELETE("/:cardId", ping)
+	}
 
-func TodoIndex(w http.ResponseWriter, r *http.Request) {
-	card := model.Card{ID: 1, Title: "Hello"}
-	json.NewEncoder(w).Encode(card)
-}
+	reviewRoutes := router.Group("/reviews")
+	{
+		reviewRoutes.GET("", ping)
+		reviewRoutes.POST("", ping)
+		reviewRoutes.GET("/:reviewId", ping)
+		reviewRoutes.PUT("/:reviewId", ping)
+		reviewRoutes.DELETE("/:reviewId", ping)
+	}
 
-func TodoShow(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	todoID := vars["todoId"]
-	fmt.Fprintln(w, "Todo show:", todoID)
+	router.Run() // listen and server on 0.0.0.0:8080
 }
