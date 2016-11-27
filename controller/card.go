@@ -30,7 +30,7 @@ func CreateCard(c *gin.Context) {
 	in := &model.Card{}
 	err := c.Bind(in)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "Invalid request.")
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	card := &model.Card{
@@ -44,6 +44,35 @@ func CreateCard(c *gin.Context) {
 	}
 	card.ID = model.ID(id)
 	c.JSON(http.StatusOK, card)
+}
+
+// UpdateCard updates a single card
+func UpdateCard(c *gin.Context) {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	in := &model.Card{ID: util.StringToID(c.Param("cardId"))}
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	card := &model.Card{ID: util.StringToID(c.Param("cardId"))}
+
+	if err := o.Read(card); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	card.Title = in.Title
+	card.Category = model.CardCategory(in.Category)
+	if _, err := o.Update(card); err == nil {
+		c.JSON(http.StatusOK, card)
+	} else {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 }
 
 // DeleteCard deletes a single card

@@ -34,7 +34,7 @@ func main() {
 	{
 		cardRoutes.GET("", controller.AllCards)
 		cardRoutes.POST("", controller.CreateCard)
-		cardRoutes.PUT("/:cardId", ping)
+		cardRoutes.PUT("/:cardId", controller.UpdateCard)
 		cardRoutes.DELETE("/:cardId", controller.DeleteCard)
 	}
 
