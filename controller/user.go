@@ -49,3 +49,19 @@ func CreateUser(c *gin.Context) {
 	user.ID = model.ID(id)
 	c.JSON(http.StatusOK, user)
 }
+
+// DeleteUser deletes a single user
+func DeleteUser(c *gin.Context) {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	num, err := o.Delete(&model.User{ID: util.StringToID(c.Param("userId"))})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+	} else if num == 0 {
+		c.JSON(http.StatusInternalServerError, "No user found")
+	} else {
+		c.JSON(http.StatusOK, num)
+	}
+}
