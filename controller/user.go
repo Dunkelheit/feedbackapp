@@ -23,3 +23,29 @@ func UserByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, user)
 }
+
+// CreateUser creates a new user
+func CreateUser(c *gin.Context) {
+	o := orm.NewOrm()
+	o.Using("default")
+
+	in := &model.User{}
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "Invalid request.")
+		return
+	}
+	user := &model.User{
+		Name:     in.Name,
+		Email:    in.Email,
+		JobTitle: in.JobTitle,
+		Avatar:   in.Avatar,
+	}
+	id, err := o.Insert(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	user.ID = model.ID(id)
+	c.JSON(http.StatusOK, user)
+}
