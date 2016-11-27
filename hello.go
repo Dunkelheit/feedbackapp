@@ -33,7 +33,7 @@ func main() {
 	cardRoutes := router.Group("/cards")
 	{
 		cardRoutes.GET("", controller.AllCards)
-		cardRoutes.POST("", ping)
+		cardRoutes.POST("", controller.CreateCard)
 		cardRoutes.PUT("/:cardId", ping)
 		cardRoutes.DELETE("/:cardId", ping)
 	}
