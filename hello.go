@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/Dunkelheit/feedbackapp/controller"
 	"github.com/Dunkelheit/feedbackapp/model"
 	"github.com/astaxie/beego/orm"
 	"gopkg.in/gin-gonic/gin.v1"
@@ -24,14 +25,14 @@ func main() {
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.POST("", ping)
-		userRoutes.GET("/:userId", UserById)
+		userRoutes.GET("/:userId", controller.UserByID)
 		userRoutes.PUT("/:userId", ping)
 		userRoutes.DELETE("/:userId", ping)
 	}
 
 	cardRoutes := router.Group("/cards")
 	{
-		cardRoutes.GET("", AllCards)
+		cardRoutes.GET("", controller.AllCards)
 		cardRoutes.POST("", ping)
 		cardRoutes.PUT("/:cardId", ping)
 		cardRoutes.DELETE("/:cardId", ping)
@@ -39,7 +40,7 @@ func main() {
 
 	reviewRoutes := router.Group("/reviews")
 	{
-		reviewRoutes.GET("", ping)
+		reviewRoutes.GET("", controller.AllReviews)
 		reviewRoutes.POST("", ping)
 		reviewRoutes.GET("/:reviewId", ping)
 		reviewRoutes.PUT("/:reviewId", ping)
