@@ -1,8 +1,10 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 // Card represents a single card
 type Card struct {
-	ID       ID           `json:"id" orm:"auto;column(id)"`
+	gorm.Model
 	Title    string       `json:"title" binding:"required"`
 	Category CardCategory `json:"category" binding:"exists"`
 }

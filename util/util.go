@@ -1,14 +1,9 @@
 package util
 
-import (
-	"strconv"
-
-	"github.com/Dunkelheit/feedbackapp/model"
-)
+import "strconv"
 
 // StringToID converts a string to a ID
-func StringToID(s string) (userID model.ID) {
-	parsedInt, _ := strconv.ParseInt(s, 10, 64)
-	userID = model.ID(parsedInt)
+func StringToID(s string) (userID int64) {
+	userID, _ = strconv.ParseInt(s, 10, 64)
 	return
 }

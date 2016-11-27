@@ -1,10 +1,12 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 // User is somebody like you or me
 type User struct {
-	ID       ID     `json:"id" orm:"auto;column(id)"`
+	gorm.Model
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	JobTitle string `json:"jobTitle"`
-	Avatar   string `json:"avatar" orm:"null"`
+	Avatar   string `json:"avatar"`
 }

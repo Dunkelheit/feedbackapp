@@ -1,12 +1,16 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 // Review of a user
 type Review struct {
-	ID        ID      `json:"id" orm:"auto;column(id)"`
-	UUID      string  `json:"uuid" orm:"column(uuid)"`
-	Reviewer  *User   `json:"reviewer" orm:"rel(fk);on_delete(cascade)"`
-	Reviewee  *User   `json:"reviewee" orm:"rel(fk);on_delete(cascade)"`
-	Cards     []*Card `json:"cards" orm:"rel(m2m)"`
-	Remark    string  `json:"remark"`
-	Completed bool    `json:"completed"`
+	gorm.Model
+	UUID       string `json:"uuid"`
+	ReviewerID uint
+	RevieweeID uint
+	Reviewer   User   `json:"reviewer"`
+	Reviewee   User   `json:"reviewee"`
+	Cards      []Card `json:"cards" gorm:"many2many:review_cards;"`
+	Remark     string `json:"remark"`
+	Completed  bool   `json:"completed"`
 }
