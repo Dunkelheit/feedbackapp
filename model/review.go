@@ -4,8 +4,8 @@ package model
 type Review struct {
 	BaseModel
 	UUID       string `json:"uuid"`
-	ReviewerID uint
-	RevieweeID uint
+	ReviewerID uint   `json:"-"`
+	RevieweeID uint   `json:"-"`
 	Reviewer   User   `json:"reviewer"`
 	Reviewee   User   `json:"reviewee"`
 	Cards      []Card `json:"cards" gorm:"many2many:review_cards;"`

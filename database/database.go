@@ -17,7 +17,7 @@ func OpenDB() {
 	}
 	// defer DB.Close()
 
-	// DB.LogMode(true)
+	DB.LogMode(true)
 
 	DB.DropTable(&model.Review{}, &model.Card{}, &model.User{})
 	DB.AutoMigrate(&model.Card{}, &model.User{}, &model.Review{})

@@ -19,6 +19,8 @@ func ping(c *gin.Context) {
 func main() {
 	router := gin.Default()
 
+	router.POST("/login", controller.Login)
+
 	userRoutes := router.Group("/users")
 	{
 		userRoutes.POST("", controller.CreateUser)

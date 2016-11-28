@@ -4,7 +4,7 @@ package model
 type User struct {
 	BaseModel
 	Name     string `json:"name"`
-	Email    string `json:"email"`
+	Email    string `json:"email" gorm:"unique_index"`
 	JobTitle string `json:"jobTitle"`
 	Avatar   string `json:"avatar"`
 }
