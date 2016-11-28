@@ -1,10 +1,8 @@
 package model
 
-import "github.com/jinzhu/gorm"
-
 // Review of a user
 type Review struct {
-	gorm.Model
+	BaseModel
 	UUID       string `json:"uuid"`
 	ReviewerID uint
 	RevieweeID uint

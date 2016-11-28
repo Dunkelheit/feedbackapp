@@ -6,7 +6,6 @@ import (
 	"github.com/Dunkelheit/feedbackapp/database"
 	"github.com/Dunkelheit/feedbackapp/model"
 	"github.com/Dunkelheit/feedbackapp/util"
-	"github.com/astaxie/beego/orm"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
@@ -19,9 +18,6 @@ func AllCards(c *gin.Context) {
 
 // CreateCard creates a new card
 func CreateCard(c *gin.Context) {
-	o := orm.NewOrm()
-	o.Using("default")
-
 	in := &model.Card{}
 	err := c.Bind(in)
 	if err != nil {
@@ -39,33 +35,22 @@ func CreateCard(c *gin.Context) {
 
 // UpdateCard updates a single card
 func UpdateCard(c *gin.Context) {
-	/*
-		o := orm.NewOrm()
-		o.Using("default")
+	in := &model.Card{}
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
-		in := &model.Card{ID: util.StringToID(c.Param("cardId"))}
-		err := c.Bind(in)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
+	var card model.Card
+	if database.DB.First(&card, util.StringToID(c.Param("cardId"))).RecordNotFound() {
+		c.JSON(http.StatusNotFound, false)
+		return
+	}
+	card.Title = in.Title
+	card.Category = model.CardCategory(in.Category)
 
-		card := &model.Card{ID: util.StringToID(c.Param("cardId"))}
-
-		if err := o.Read(card); err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		card.Title = in.Title
-		card.Category = model.CardCategory(in.Category)
-		if _, err := o.Update(card); err == nil {
-			c.JSON(http.StatusOK, card)
-		} else {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-	*/
+	database.DB.Save(&card)
 }
 
 // DeleteCard deletes a single card

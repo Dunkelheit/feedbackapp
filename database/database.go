@@ -24,6 +24,8 @@ func OpenDB() {
 
 	// DB.Model(&model.Review{}).Related(&model.User{}, "Reviewer")
 	// DB.Model(&model.Review{}).Related(&model.User{}, "Reviewee")
+	// DB.Model(&model.Review{}).Related(&model.User{}, "reviewer_id")
+	// DB.Model(&model.Review{}).Related(&model.User{}, "reviewee_id")
 
 	DB.Model(&model.Review{}).AddForeignKey("reviewer_id", "users(id)", "CASCADE", "CASCADE")
 	DB.Model(&model.Review{}).AddForeignKey("reviewee_id", "users(id)", "CASCADE", "CASCADE")
