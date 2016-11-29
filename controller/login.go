@@ -88,7 +88,6 @@ func preloadLDAPUsers(l *ldap.Conn) (int, error) {
 
 // Login using LDAP
 func Login(c *gin.Context) {
-
 	in := &login{}
 	err := c.Bind(in)
 	if err != nil {
@@ -108,7 +107,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if true { // TODO: If (I have to preload the database)
+	var currentUsers int64
+	database.DB.Model(&model.User{}).Count(&currentUsers)
+
+	if currentUsers == 0 {
 		go func() {
 			defer l.Close()
 			newUsers, err := preloadLDAPUsers(l)
@@ -120,24 +122,21 @@ func Login(c *gin.Context) {
 		}()
 	} else {
 		defer l.Close()
-
 	}
 
-	searchRequest := buildSearchRequest(fmt.Sprintf(ldapFilterSingleUsers, in.Username))
-
-	sr, err := l.Search(searchRequest)
+	searchResult, err := l.Search(buildSearchRequest(fmt.Sprintf(ldapFilterSingleUsers, in.Username)))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if len(sr.Entries) != 1 {
-		c.JSON(http.StatusInternalServerError, fmt.Sprintf("Unexpected amount of users found (%d)", len(sr.Entries)))
+	if foundUsers := len(searchResult.Entries); foundUsers != 1 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf("Unexpected amount of users found (%d)", foundUsers))
 		return
 	}
 
-	user := entryToUser(sr.Entries[0])
+	user := entryToUser(searchResult.Entries[0])
 
 	c.JSON(http.StatusOK, user)
 }
