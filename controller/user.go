@@ -20,25 +20,6 @@ func UserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// CreateUser creates a new user
-func CreateUser(c *gin.Context) {
-	in := &model.User{}
-	err := c.Bind(in)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-	user := &model.User{
-		Name:     in.Name,
-		Email:    in.Email,
-		JobTitle: in.JobTitle,
-		Avatar:   in.Avatar,
-	}
-	database.DB.Create(user)
-
-	c.JSON(http.StatusOK, user)
-}
-
 // DeleteUser deletes a single user
 func DeleteUser(c *gin.Context) {
 	var user model.User

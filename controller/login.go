@@ -4,49 +4,140 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Dunkelheit/feedbackapp/database"
+	"github.com/Dunkelheit/feedbackapp/model"
+
 	"gopkg.in/gin-gonic/gin.v1"
 	ldap "gopkg.in/ldap.v2"
 )
 
+const (
+	ldapHost               = "10.41.100.152"
+	ldapPort               = 389
+	ldapAttrMail           = "mail"
+	ldapAttrName           = "name"
+	ldapAttrGivenName      = "givenName"
+	ldapAttrSn             = "sn"
+	ldapAttrTitle          = "title"
+	ldapAttrDepartment     = "department"
+	ldapAttrCompany        = "company"
+	ldapAttrSAMAccountName = "sAMAccountName"
+	ldapBaseDN             = "ou=Icemobile,dc=brandloyaltyint,dc=corp"
+	ldapFilterAllUsers     = "(&(objectClass=user))"
+	ldapFilterSingleUsers  = "(&(objectClass=user)(sAMAccountName=%s))"
+	ldapUsername           = "%s@brandloyaltyint.corp"
+)
+
+type login struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+var ldapAttributes = []string{ldapAttrMail, ldapAttrName, ldapAttrGivenName, ldapAttrSn, ldapAttrTitle, ldapAttrDepartment, ldapAttrCompany, ldapAttrSAMAccountName}
+
+func buildSearchRequest(filter string) *ldap.SearchRequest {
+	return ldap.NewSearchRequest(ldapBaseDN, ldap.ScopeWholeSubtree, ldap.DerefAlways,
+		0, 0, false, filter, ldapAttributes, nil)
+}
+
+func filterEntriesWithoutMail(entries []*ldap.Entry) []*ldap.Entry {
+	result := make([]*ldap.Entry, 0)
+	for _, entry := range entries {
+		if mail := entry.GetRawAttributeValue(ldapAttrMail); len(mail) > 0 {
+			result = append(result, entry)
+		}
+	}
+	return result
+}
+
+func getLDAPUsers(l *ldap.Conn) ([]*ldap.Entry, error) {
+	searchRequest := buildSearchRequest(ldapFilterAllUsers)
+
+	sr, err := l.Search(searchRequest)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return filterEntriesWithoutMail(sr.Entries), nil
+}
+
+func entryToUser(user *ldap.Entry) *model.User {
+	return &model.User{
+		Username:   user.GetAttributeValue(ldapAttrSAMAccountName),
+		FirstName:  user.GetAttributeValue(ldapAttrGivenName),
+		Surname:    user.GetAttributeValue(ldapAttrSn),
+		FullName:   user.GetAttributeValue(ldapAttrName),
+		JobTitle:   user.GetAttributeValue(ldapAttrTitle),
+		Department: user.GetAttributeValue(ldapAttrDepartment),
+		Company:    user.GetAttributeValue(ldapAttrCompany),
+		Email:      user.GetAttributeValue(ldapAttrMail),
+	}
+}
+
+func preloadLDAPUsers(l *ldap.Conn) (int, error) {
+	users, err := getLDAPUsers(l)
+	if err != nil {
+		return 0, err
+	}
+	for _, user := range users {
+		database.DB.Create(entryToUser(user))
+	}
+	return len(users), nil
+}
+
 // Login using LDAP
 func Login(c *gin.Context) {
-	type Login struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
-	}
-	in := &Login{}
+
+	in := &login{}
 	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", "10.41.100.152", 389))
-	defer l.Close()
+	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", ldapHost, ldapPort))
 	if err != nil {
 		c.JSON(http.StatusServiceUnavailable, err.Error())
 		return
 	}
 
-	err = l.Bind(in.Username+"@brandloyaltyint.corp", in.Password)
+	err = l.Bind(fmt.Sprintf(ldapUsername, in.Username), in.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
-	attributes := []string{"mail", "name", "givenName", "sn", "title", "department", "company", "sAMAccountName"}
-	searchRequest := ldap.NewSearchRequest("ou=Icemobile,dc=brandloyaltyint,dc=corp", ldap.ScopeWholeSubtree, ldap.DerefAlways,
-		0, 0, false, "(&(objectClass=user)(sAMAccountName="+in.Username+"))", attributes, nil)
+
+	if true { // TODO: If (I have to preload the database)
+		go func() {
+			defer l.Close()
+			newUsers, err := preloadLDAPUsers(l)
+			fmt.Println(fmt.Sprintf("New users: %d", newUsers))
+			if err != nil {
+				fmt.Println("Error!")
+				fmt.Println(err)
+			}
+		}()
+	} else {
+		defer l.Close()
+
+	}
+
+	searchRequest := buildSearchRequest(fmt.Sprintf(ldapFilterSingleUsers, in.Username))
+
 	sr, err := l.Search(searchRequest)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	for _, elem := range sr.Entries {
-		for _, at := range attributes {
-			fmt.Println(at + ": " + elem.GetAttributeValue(at))
-		}
+
+	if len(sr.Entries) != 1 {
+		c.JSON(http.StatusInternalServerError, fmt.Sprintf("Unexpected amount of users found (%d)", len(sr.Entries)))
+		return
 	}
 
-	c.JSON(http.StatusOK, sr)
+	user := entryToUser(sr.Entries[0])
+
+	c.JSON(http.StatusOK, user)
 }

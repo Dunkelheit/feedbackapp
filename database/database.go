@@ -35,17 +35,19 @@ func OpenDB() {
 	DB.Create(&model.Card{Title: "Lazy eye", Category: model.CardCategoryNegative})
 	DB.Create(&model.Card{Title: "Stinky feet", Category: model.CardCategoryNegative})
 
-	DB.Create(&model.User{Name: "Arturo Martinez", Email: "arturo@icemobile.com", JobTitle: "Node.js Developer", Avatar: "none"})
-	DB.Create(&model.User{Name: "Rosa van Colmjon", Email: "rosa@icemobile.com", JobTitle: "Scrum Master Extraordinaire", Avatar: "none"})
-	DB.Create(&model.User{Name: "Caio Borges", Email: "caio@icemobile.com", JobTitle: "Test Engineer", Avatar: "none"})
-	DB.Create(&model.User{Name: "Marco Silva", Email: "marco@icemobile.com", JobTitle: "Visual Designer", Avatar: "none"})
+	// DB.Create(&model.User{Name: "Arturo Martinez", Email: "arturo@icemobile.com", JobTitle: "Node.js Developer", Avatar: "none"})
+	// DB.Create(&model.User{Name: "Rosa van Colmjon", Email: "rosa@icemobile.com", JobTitle: "Scrum Master Extraordinaire", Avatar: "none"})
+	// DB.Create(&model.User{Name: "Caio Borges", Email: "caio@icemobile.com", JobTitle: "Test Engineer", Avatar: "none"})
+	// DB.Create(&model.User{Name: "Marco Silva", Email: "marco@icemobile.com", JobTitle: "Visual Designer", Avatar: "none"})
 
-	DB.Create(&model.Review{
-		UUID:      "1234",
-		Remark:    "Lorem ipsum",
-		Completed: false,
-		Reviewee:  model.User{Name: "Willem Verker", Email: "willem@icemobile.com", JobTitle: "UX Designer", Avatar: "none"},
-		Reviewer:  model.User{Name: "Miika Kossi", Email: "miika@icemobile.com", JobTitle: "Associate Creative Director", Avatar: "none"},
-		Cards:     []model.Card{{Title: "Bad english", Category: model.CardCategoryNegative}},
-	})
+	/*
+		DB.Create(&model.Review{
+			UUID:      "1234",
+			Remark:    "Lorem ipsum",
+			Completed: false,
+			Reviewee:  model.User{Name: "Willem Verker", Email: "willem@icemobile.com", JobTitle: "UX Designer", Avatar: "none"},
+			Reviewer:  model.User{Name: "Miika Kossi", Email: "miika@icemobile.com", JobTitle: "Associate Creative Director", Avatar: "none"},
+			Cards:     []model.Card{{Title: "Bad english", Category: model.CardCategoryNegative}},
+		})
+	*/
 }

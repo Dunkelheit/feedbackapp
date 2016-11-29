@@ -23,7 +23,6 @@ func main() {
 
 	userRoutes := router.Group("/users")
 	{
-		userRoutes.POST("", controller.CreateUser)
 		userRoutes.GET("/:userId", controller.UserByID)
 		userRoutes.PUT("/:userId", ping)
 		userRoutes.DELETE("/:userId", controller.DeleteUser)
