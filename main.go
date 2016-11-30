@@ -19,16 +19,18 @@ func ping(c *gin.Context) {
 func main() {
 	router := gin.Default()
 
-	router.POST("/login", controller.Login)
+	apiRoutes := router.Group("/api")
 
-	userRoutes := router.Group("/users")
+	apiRoutes.POST("/login", controller.Login)
+
+	userRoutes := apiRoutes.Group("/users")
 	{
 		userRoutes.GET("/:userId", controller.UserByID)
 		userRoutes.PUT("/:userId", ping)
 		userRoutes.DELETE("/:userId", controller.DeleteUser)
 	}
 
-	cardRoutes := router.Group("/cards")
+	cardRoutes := apiRoutes.Group("/cards")
 	{
 		cardRoutes.GET("", controller.AllCards)
 		cardRoutes.POST("", controller.CreateCard)
@@ -36,7 +38,7 @@ func main() {
 		cardRoutes.DELETE("/:cardId", controller.DeleteCard)
 	}
 
-	reviewRoutes := router.Group("/reviews")
+	reviewRoutes := apiRoutes.Group("/reviews")
 	{
 		reviewRoutes.GET("", controller.AllReviews)
 		reviewRoutes.POST("", controller.CreateReview)
@@ -44,6 +46,10 @@ func main() {
 		reviewRoutes.PUT("/:reviewId", ping)
 		reviewRoutes.DELETE("/:reviewId", ping)
 	}
+
+	router.StaticFile("/", "./web/dist/index.html")
+	router.StaticFile("/admin", "./web/dist/index.html")
+	router.Static("/static", "./web/dist/static/")
 
 	router.Run() // listen and server on 0.0.0.0:8080
 }

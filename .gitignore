@@ -25,3 +25,9 @@ _testmain.go
 
 # Visual Studio Code files
 .vscode
+
+# Node stuff
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
