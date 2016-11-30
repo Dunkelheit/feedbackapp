@@ -28,3 +28,29 @@ func AllReviews(c *gin.Context) {
 	database.DB.Model(&reviews).Preload("Reviewer").Preload("Reviewee").Preload("Cards").Find(&reviews)
 	c.JSON(http.StatusOK, reviews)
 }
+
+// CreateReview creates a review
+func CreateReview(c *gin.Context) {
+	in := &model.Review{}
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	review := &model.Review{
+		UUID:       "1234",
+		Remark:     "Lorem ipsum",
+		Completed:  false,
+		ReviewerID: 1,
+		RevieweeID: 2,
+		Cards:      []model.Card{},
+	}
+	database.DB.Create(review)
+
+	c.JSON(http.StatusOK, review)
+}
+
+// CloseReview closes a review
+func CloseReview(c *gin.Context) {
+
+}

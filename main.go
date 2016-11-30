@@ -39,7 +39,7 @@ func main() {
 	reviewRoutes := router.Group("/reviews")
 	{
 		reviewRoutes.GET("", controller.AllReviews)
-		reviewRoutes.POST("", ping)
+		reviewRoutes.POST("", controller.CreateReview)
 		reviewRoutes.GET("/:reviewId", ping)
 		reviewRoutes.PUT("/:reviewId", ping)
 		reviewRoutes.DELETE("/:reviewId", ping)
