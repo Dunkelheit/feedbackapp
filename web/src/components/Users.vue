@@ -1,16 +1,26 @@
 <template>
     <div>
         <h1>Users</h1>
-        <dl>
-            <dt v-for="user in users">
-                <dd>
-                    <ul>
-                        <li>Name: {{user.fullName}}</li>
-                        <li>Job Title: {{user.jobTitle}}</li>
-                    </ul>
-                </dd>
-            </dt>
-        </ul>
+        <div class="loading" v-if="loading">
+            Loading...
+        </div>
+        <div v-if="error" class="error">
+        </div>
+        <div v-if="users.length > 0" class="content">
+            <dl>
+                <dt v-for="user in users">
+                    <dd>
+                        <ul>
+                            <li>Name: {{user.fullName}}</li>
+                            <li>Email: {{user.email}}</li>
+                            <li>Job Title: {{user.jobTitle}}</li>
+                            <li>Department: {{user.department}}</li>
+                            <li>Company: {{user.company}}</li>
+                        </ul>
+                    </dd>
+                </dt>
+            </dl>
+        </div>
     </div>
 </template>
 
@@ -18,16 +28,30 @@
 import axios from 'axios';
 export default {
     name: 'users',
-    data: function () {
+    data () {
         return {
-            users: [{ title: 'Empty' }]
+            loading: false,
+            users: [],
+            error: null
         };
     },
-    beforeMount() {
-        axios.get('/api/users').then(response => {
-            this.users = response.data;
-            console.log(this.users);
-        });
+    created() {
+        this.fetchUsers();
+    },
+    watch: {
+        '$route': 'fetchUsers'
+    },
+    methods: {
+        fetchUsers() {
+            this.error = null;
+            this.users = [];
+            this.loading = true;
+            axios.get('/api/users').then(response => {
+                this.loading = false;
+                this.users = response.data;
+                console.log(this.users);
+            });
+        }
     }
 }
 </script>
