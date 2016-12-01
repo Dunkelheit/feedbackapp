@@ -18,6 +18,14 @@
                 </dt>
             </dl>
         </div>
+        <div>
+            <input v-model="card.title" placeholder="Title">
+            <select v-model="card.category">
+                <option value="0">Positive</option>
+                <option value="1">Negative</option>
+            </select>
+            <button v-on:click="createCard">Create</button>
+        </div>
     </div>
 </template>
 
@@ -29,7 +37,11 @@ export default {
         return {
             loading: false,
             cards: [],
-            error: null
+            error: null,
+            card: {
+                title: '',
+                category: 0
+            }
         };
     },
     created() {
@@ -39,6 +51,14 @@ export default {
         '$route': 'fetchCards'
     },
     methods: {
+        createCard(event) {
+            axios.post('/api/cards', {
+                title: this.card.title,
+                category: parseInt(this.card.category, 10)
+            }).then(response => {
+                this.cards.push(response.data);
+            });
+        },
         fetchCards() {
             this.error = null;
             this.cards = [];

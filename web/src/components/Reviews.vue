@@ -8,14 +8,25 @@
         </div>
         <div v-if="reviews.length > 0" class="content">
             <dl>
-                <dt v-for="card in reviews">
+                <dt v-for="review in reviews">
                     <dd>
                         <ul>
-                            <li>Title: {{review.id}}</li>
+                            <li>{{review.uuid}}</li>
+                            <li>{{review.reviewer.fullName}} reviews {{review.reviewee.fullName}}</li>
+                            <li>Completed: {{review.completed}} </li>
                         </ul>
                     </dd>
                 </dt>
             </dl>
+        </div>
+        <div>
+            <select v-model="review.reviewerId">
+                <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
+            </select>
+            <select v-model="review.revieweeId">
+                <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
+            </select>
+            <button v-on:click="createReview">Create</button>
         </div>
     </div>
 </template>
@@ -28,25 +39,42 @@ export default {
         return {
             loading: false,
             reviews: [],
-            error: null
+            users: [],
+            error: null,
+            review: {
+                reviewerId: null,
+                revieweeId: null
+            }
         };
     },
     created() {
-        this.fetchReviews();
+        this.fetchReviewsAndUsers();
     },
     watch: {
-        '$route': 'fetchReviews'
+        '$route': 'fetchReviewsAndUsers'
     },
     methods: {
-        fetchReviews() {
+        createReview() {
+            axios.post('/api/reviews', {
+                reviewerId: this.review.reviewerId,
+                revieweeId: this.review.revieweeId
+            }).then(response => {
+                this.reviews.push(response.data);
+            });
+        },
+        fetchReviewsAndUsers() {
             this.error = null;
             this.reviews = [];
+            this.users = [];
             this.loading = true;
-            axios.get('/api/reviews').then(response => {
+            axios.all([
+                axios.get('/api/reviews'),
+                axios.get('/api/users')
+            ]).then(axios.spread((reviews, users) => {
+                this.reviews = reviews.data;
+                this.users = users.data;
                 this.loading = false;
-                this.reviews = response.data;
-                console.log(this.reviews);
-            });
+            }));
         }
     }
 }

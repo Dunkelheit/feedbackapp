@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Dunkelheit/feedbackapp/database"
@@ -31,18 +32,23 @@ func AllReviews(c *gin.Context) {
 
 // CreateReview creates a review
 func CreateReview(c *gin.Context) {
-	in := &model.Review{}
+	type reviewForm struct {
+		ReviewerID uint `json:"reviewerId" binding:"required"`
+		RevieweeID uint `json:"revieweeId" binding:"required"`
+	}
+	in := &reviewForm{}
 	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	fmt.Println(in.ReviewerID)
+	fmt.Println(in.RevieweeID)
 	review := &model.Review{
-		UUID:       "1234",
 		Remark:     "Lorem ipsum",
 		Completed:  false,
-		ReviewerID: 1,
-		RevieweeID: 2,
+		ReviewerID: in.ReviewerID,
+		RevieweeID: in.RevieweeID,
 		Cards:      []model.Card{},
 	}
 	database.DB.Create(review)
