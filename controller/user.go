@@ -10,6 +10,13 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
+// AllUsers retrieves all the available users
+func AllUsers(c *gin.Context) {
+	var users []model.User
+	database.DB.Find(&users)
+	c.JSON(http.StatusOK, users)
+}
+
 // UserByID gets a single user by its identifier
 func UserByID(c *gin.Context) {
 	var user model.User

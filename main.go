@@ -25,6 +25,7 @@ func main() {
 
 	userRoutes := apiRoutes.Group("/users")
 	{
+		userRoutes.GET("", controller.AllUsers)
 		userRoutes.GET("/:userId", controller.UserByID)
 		userRoutes.PUT("/:userId", ping)
 		userRoutes.DELETE("/:userId", controller.DeleteUser)
