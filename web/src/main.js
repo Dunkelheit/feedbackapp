@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import App from './App';
 import Cards from './components/Cards';
 import Users from './components/Users';
+import Reviews from './components/Reviews';
 
 Vue.use(VueRouter);
 
@@ -15,7 +16,8 @@ const Bar = {
 
 const routes = [
   { path: '/cards', component: Cards },
-  { path: '/users', component: Users }
+  { path: '/users', component: Users },
+  { path: '/reviews', component: Reviews }
 ]
 
 const router = new VueRouter({

@@ -6,6 +6,7 @@
       <!-- <router-link> will be rendered as an `<a>` tag by default -->
       <router-link to="/cards">Cards</router-link>
       <router-link to="/users">Users</router-link>
+      <router-link to="/reviews">Reviews</router-link>
     </p>
     <router-view></router-view>
   </div>
