@@ -7,13 +7,6 @@ import Reviews from './components/Reviews';
 
 Vue.use(VueRouter);
 
-const Foo = {
-    template: '<div>foo</div>'
-}
-const Bar = {
-    template: '<div>bar</div>'
-}
-
 const routes = [
   { path: '/cards', component: Cards },
   { path: '/cards/:id', component: Cards, name: 'cardById' },
