@@ -13,18 +13,20 @@
                         <ul>
                             <li>Title: {{card.title}}</li>
                             <li>Category: {{card.category}}</li>
+                            <li><router-link :to="{name: 'cardById', params: { id: card.id }}">Edit</router-link></li>
                         </ul>
                     </dd>
                 </dt>
             </dl>
         </div>
         <div>
-            <input v-model="card.title" placeholder="Title">
+            <input v-model="card.id" type="hidden" />
+            <input v-model="card.title" placeholder="Title" />
             <select v-model="card.category">
                 <option value="0">Positive</option>
                 <option value="1">Negative</option>
             </select>
-            <button v-on:click="createCard">Create</button>
+            <button v-on:click="persistCard">{{ card.id ? 'Update' : 'Create' }}</button>
         </div>
     </div>
 </template>
@@ -39,6 +41,7 @@ export default {
             cards: [],
             error: null,
             card: {
+                id: null,
                 title: '',
                 category: 0
             }
@@ -51,13 +54,23 @@ export default {
         '$route': 'fetchCards'
     },
     methods: {
-        createCard(event) {
-            axios.post('/api/cards', {
+        persistCard(event) {
+            var action;
+            var url;
+            if (this.card.id !== null) {
+                action = 'put';
+                url = '/api/cards/' + this.card.id;
+            } else {
+                action = 'post';
+                url = '/api/cards';
+            }
+            axios[action](url, {
                 title: this.card.title,
                 category: parseInt(this.card.category, 10)
             }).then(response => {
-                this.cards.push(response.data);
-            });
+                this.card.id = null;
+                this.card.title = '';
+            }).then(this.fetchCards)
         },
         fetchCards() {
             this.error = null;
@@ -66,7 +79,19 @@ export default {
             axios.get('/api/cards').then(response => {
                 this.loading = false;
                 this.cards = response.data;
-                console.log(this.cards);
+                if (this.$route.params.id) {
+                    this.loadCard(parseInt(this.$route.params.id, 10));
+                }
+            });
+        },
+        loadCard(cardId) {
+            this.cards.forEach(card => {
+                if (card.id === cardId) {
+                    this.card.id = card.id;
+                    this.card.title = card.title;
+                    this.card.category = card.category;
+                    return;
+                }
             });
         }
     }
