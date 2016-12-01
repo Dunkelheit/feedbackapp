@@ -9,14 +9,22 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Project name</a>
+                    <a class="navbar-brand" href="#">The Feedback App</a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><router-link to="/cards">Cards</router-link></li>
-                        <li><router-link to="/users">Users</router-link></li>
-                        <li><router-link to="/reviews">Reviews</router-link></li>
+                        <router-link tag="li" to="/">
+                            <a>Home</a>
+                        </router-link>
+                        <router-link tag="li" to="/cards">
+                            <a>Cards</a>
+                        </router-link>
+                        <router-link tag="li" to="/users">
+                            <a>Users</a>
+                        </router-link>
+                        <router-link tag="li" to="/reviews">
+                            <a>Reviews</a>
+                        </router-link>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>

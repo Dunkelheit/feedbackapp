@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>Cards</h1>
         <div class="loading" v-if="loading">
             Loading...
         </div>
@@ -8,15 +7,14 @@
         </div>
         <div v-if="cards.length > 0" class="content">
             <dl>
-                <dt v-for="card in cards">
-                    <dd>
-                        <ul>
-                            <li>Title: {{card.title}}</li>
-                            <li>Category: {{card.category}}</li>
-                            <li><router-link :to="{name: 'cardById', params: { id: card.id }}">Edit</router-link></li>
-                        </ul>
-                    </dd>
-                </dt>
+                <dt>Cards</dt>
+                <dd>
+                    <ul v-for="card in cards">
+                        <li>Title: {{card.title}}</li>
+                        <li>Category: {{card.category}}</li>
+                        <li><router-link :to="{name: 'cardById', params: { id: card.id }}">Edit</router-link></li>
+                    </ul>
+                </dd>
             </dl>
         </div>
         <div>

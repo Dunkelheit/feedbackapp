@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>Users</h1>
         <div class="loading" v-if="loading">
             Loading...
         </div>
@@ -8,17 +7,16 @@
         </div>
         <div v-if="users.length > 0" class="content">
             <dl>
-                <dt v-for="user in users">
-                    <dd>
-                        <ul>
-                            <li>Name: {{user.fullName}}</li>
-                            <li>Email: {{user.email}}</li>
-                            <li>Job Title: {{user.jobTitle}}</li>
-                            <li>Department: {{user.department}}</li>
-                            <li>Company: {{user.company}}</li>
-                        </ul>
-                    </dd>
-                </dt>
+                <dt>Users</dt>
+                <dd>
+                    <ul v-for="user in users">
+                        <li>Name: {{user.fullName}}</li>
+                        <li>Email: {{user.email}}</li>
+                        <li>Job Title: {{user.jobTitle}}</li>
+                        <li>Department: {{user.department}}</li>
+                        <li>Company: {{user.company}}</li>
+                    </ul>
+                </dd>
             </dl>
         </div>
     </div>

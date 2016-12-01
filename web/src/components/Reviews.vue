@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>Reviews</h1>
         <div class="loading" v-if="loading">
             Loading...
         </div>
@@ -8,15 +7,14 @@
         </div>
         <div v-if="reviews.length > 0" class="content">
             <dl>
-                <dt v-for="review in reviews">
-                    <dd>
-                        <ul>
-                            <li>{{review.uuid}}</li>
-                            <li>{{review.reviewer.fullName}} reviews {{review.reviewee.fullName}}</li>
-                            <li>Completed: {{review.completed}} </li>
-                        </ul>
-                    </dd>
-                </dt>
+                <dt>Reviews</dt>
+                <dd>
+                    <ul v-for="review in reviews">
+                        <li>{{review.uuid}}</li>
+                        <li>{{review.reviewer.fullName}} reviews {{review.reviewee.fullName}}</li>
+                        <li>Completed: {{review.completed}} </li>
+                    </ul>
+                </dd>
             </dl>
         </div>
         <div>
