@@ -70,7 +70,12 @@ export default {
             }).then(response => {
                 this.card.id = null;
                 this.card.title = '';
-            }).then(this.fetchCards)
+                if (action === 'put') {
+                    this.$router.push('/cards');
+                } else {
+                    this.fetchCards();
+                }
+            });
         },
         fetchCards() {
             this.error = null;
