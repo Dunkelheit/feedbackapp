@@ -37,11 +37,11 @@
                             <input v-model="card.id" type="hidden" />
                             <div class="form-group">
                                 <label for="inputTitle">Title</label>
-                                <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here">
+                                <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here" required autofocus>
                             </div>
                             <div class="form-group">
                                 <label for="inputCategory">Category</label>
-                                <select id="inputCategory" class="form-control" v-model="card.category">
+                                <select id="inputCategory" class="form-control" v-model="card.category" required>
                                     <option value="0">Positive</option>
                                     <option value="1">Negative</option>
                                 </select>

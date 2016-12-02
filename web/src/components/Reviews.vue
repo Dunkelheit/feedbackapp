@@ -39,13 +39,13 @@
                             <input v-model="review.id" type="hidden" />
                             <div class="form-group">
                                 <label for="inputReviewer">Reviewer</label>
-                                <select id="inputReviewer" class="form-control" v-model="review.reviewerId">
+                                <select id="inputReviewer" class="form-control" v-model="review.reviewerId" required autofocus>
                                     <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="inputReviewee">Reviewee</label>
-                                <select id="inputReviewee" class="form-control" v-model="review.revieweeId">
+                                <select id="inputReviewee" class="form-control" v-model="review.revieweeId" required>
                                     <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
                                 </select>
                             </div>
