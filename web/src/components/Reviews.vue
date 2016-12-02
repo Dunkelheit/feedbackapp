@@ -10,25 +10,53 @@
         <div v-if="error" class="error">
         </div>
         <div v-if="reviews.length > 0" class="content">
-            <dl>
-                <dt>Reviews</dt>
-                <dd>
-                    <ul v-for="review in reviews">
-                        <li>{{review.uuid}}</li>
-                        <li>{{review.reviewer.fullName}} reviews {{review.reviewee.fullName}}</li>
-                        <li>Completed: {{review.completed}} </li>
-                    </ul>
-                </dd>
-            </dl>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>UUID</th>
+                        <th>Who reviews who</th>
+                        <th>Completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="review in reviews">
+                        <td><a href="#">{{review.uuid}}</a></td>
+                        <td><strong>{{review.reviewer.fullName}}</strong> reviews <strong>{{review.reviewee.fullName}}</strong></td>
+                        <td>{{review.completed ? 'Yes' : 'No'}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div>
-            <select v-model="review.reviewerId">
-                <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
-            </select>
-            <select v-model="review.revieweeId">
-                <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
-            </select>
-            <button v-on:click="createReview">Create</button>
+        <div id="createModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{{ review.id ? 'Update' : 'Create' }} review</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <input v-model="review.id" type="hidden" />
+                            <div class="form-group">
+                                <label for="inputReviewer">Reviewer</label>
+                                <select id="inputReviewer" class="form-control" v-model="review.reviewerId">
+                                    <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputReviewee">Reviewee</label>
+                                <select id="inputReviewee" class="form-control" v-model="review.revieweeId">
+                                    <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" v-on:click="createReview">{{ review.id ? 'Update' : 'Create' }}</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -44,6 +72,7 @@ export default {
             users: [],
             error: null,
             review: {
+                id: null,
                 reviewerId: null,
                 revieweeId: null
             }
@@ -60,9 +89,17 @@ export default {
             axios.post('/api/reviews', {
                 reviewerId: this.review.reviewerId,
                 revieweeId: this.review.revieweeId
-            }).then(response => {
-                this.reviews.push(response.data);
-            });
+            }).then(this.fetchReviews);
+        },
+        fetchReviews() {
+            this.error = null;
+            this.reviews = [];
+            this.loading = true;
+            axios.get('/api/reviews').then(response => {
+                this.reviews = response.data;
+                this.loading = false;
+                $('#createModal').modal('hide');
+            })
         },
         fetchReviewsAndUsers() {
             this.error = null;

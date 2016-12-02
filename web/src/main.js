@@ -11,7 +11,6 @@ Vue.use(VueRouter);
 const routes = [
   { path: '/', component: Home },
   { path: '/cards', component: Cards },
-  { path: '/cards/:id', component: Cards, name: 'cardById' },
   { path: '/users', component: Users },
   { path: '/reviews', component: Reviews }
 ];

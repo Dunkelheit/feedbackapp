@@ -58,7 +58,6 @@ export default {
             axios.get('/api/users').then(response => {
                 this.loading = false;
                 this.users = response.data;
-                console.log(this.users);
             });
         }
     }

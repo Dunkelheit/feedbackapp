@@ -4,7 +4,7 @@
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModal">Create</button>
             <h1>Cards</h1>
         </div>
-        <div v-if="loading">
+        <div class="loading" v-if="loading">
             Loading...
         </div>
         <div v-if="error">
@@ -15,25 +15,22 @@
                     <tr>
                         <th>Title</th>
                         <th>Category</th>
-                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="card in cards">
-                        <td>{{card.title}}</td>
+                        <td><a href="#" v-on:click="loadCard(card.id, $event)">{{card.title}}</a></td>
                         <td>{{card.category === 0 ? 'Positive' : 'Negative'}}</td>
-                        <td><a href="#" v-on:click="loadCard(card.id, $event)">Edit</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
         <div id="createModal" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Modal title</h4>
+                        <h4 class="modal-title">{{ card.id ? 'Update' : 'Create' }} card</h4>
                     </div>
                     <div class="modal-body">
                         <form>
@@ -43,8 +40,8 @@
                                 <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here">
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Title</label>
-                                <select class="form-control" v-model="card.category">
+                                <label for="inputCategory">Category</label>
+                                <select id="inputCategory" class="form-control" v-model="card.category">
                                     <option value="0">Positive</option>
                                     <option value="1">Negative</option>
                                 </select>
@@ -100,11 +97,7 @@ export default {
             }).then(response => {
                 this.card.id = null;
                 this.card.title = '';
-                if (action === 'put') {
-                    this.$router.push('/cards');
-                } else {
-                    this.fetchCards();
-                }
+                this.fetchCards();
                 $('#createModal').modal('hide');
             });
         },
@@ -135,6 +128,3 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
