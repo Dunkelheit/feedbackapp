@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="page-header">
-            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModal">Create</button>
+            <button type="button" class="btn btn-primary pull-right" v-on:click="openModal">Create</button>
             <h1>Cards</h1>
         </div>
         <div class="loading" v-if="loading">
@@ -81,6 +81,14 @@ export default {
         '$route': 'fetchCards'
     },
     methods: {
+        openModal(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            this.card.id = null;
+            this.card.title = '';
+            $('#createModal').modal('show');
+        },
         persistCard(event) {
             var action;
             var url;
