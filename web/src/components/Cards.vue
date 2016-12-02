@@ -76,6 +76,8 @@ export default {
         };
     },
     created() {
+        console.log('LOCAL STORAGE');
+        console.log(localStorage);
         this.fetchCards();
     },
     watch: {

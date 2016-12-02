@@ -8,12 +8,34 @@ import (
 	"github.com/Dunkelheit/feedbackapp/controller"
 	"github.com/Dunkelheit/feedbackapp/database"
 	"github.com/Dunkelheit/feedbackapp/model"
+	"github.com/Dunkelheit/feedbackapp/util"
 	"gopkg.in/gin-gonic/gin.v1"
 )
 
 func ping(c *gin.Context) {
 	card := model.Card{Title: "Hello"}
 	c.JSON(http.StatusOK, card)
+}
+
+// AuthRequired is the authentication middleware
+func AuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.Request.Header.Get("x-auth-token")
+		if len(tokenString) == 0 {
+			c.JSON(http.StatusUnauthorized, "Authentication required")
+			c.Abort()
+			return
+		}
+		username, mail, err := util.DecodeToken(tokenString)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, "Invalid authentication")
+			c.Abort()
+			return
+		}
+		c.Set("username", username)
+		c.Set("mail", mail)
+		c.Next()
+	}
 }
 
 func main() {
@@ -23,7 +45,7 @@ func main() {
 
 	apiRoutes.POST("/login", controller.Login)
 
-	userRoutes := apiRoutes.Group("/users")
+	userRoutes := apiRoutes.Group("/users").Use(AuthRequired())
 	{
 		userRoutes.GET("", controller.AllUsers)
 		userRoutes.GET("/:userId", controller.UserByID)
@@ -31,7 +53,7 @@ func main() {
 		userRoutes.DELETE("/:userId", controller.DeleteUser)
 	}
 
-	cardRoutes := apiRoutes.Group("/cards")
+	cardRoutes := apiRoutes.Group("/cards").Use(AuthRequired())
 	{
 		cardRoutes.GET("", controller.AllCards)
 		cardRoutes.POST("", controller.CreateCard)
@@ -39,7 +61,7 @@ func main() {
 		cardRoutes.DELETE("/:cardId", controller.DeleteCard)
 	}
 
-	reviewRoutes := apiRoutes.Group("/reviews")
+	reviewRoutes := apiRoutes.Group("/reviews").Use(AuthRequired())
 	{
 		reviewRoutes.GET("", controller.AllReviews)
 		reviewRoutes.POST("", controller.CreateReview)

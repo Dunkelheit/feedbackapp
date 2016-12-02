@@ -6,6 +6,7 @@ import (
 
 	"github.com/Dunkelheit/feedbackapp/database"
 	"github.com/Dunkelheit/feedbackapp/model"
+	"github.com/Dunkelheit/feedbackapp/util"
 
 	"gopkg.in/gin-gonic/gin.v1"
 	ldap "gopkg.in/ldap.v2"
@@ -110,7 +111,7 @@ func Login(c *gin.Context) {
 	var currentUsers int64
 	database.DB.Model(&model.User{}).Count(&currentUsers)
 
-	if currentUsers == 0 {
+	if false {
 		go func() {
 			defer l.Close()
 			newUsers, err := preloadLDAPUsers(l)
@@ -138,5 +139,12 @@ func Login(c *gin.Context) {
 
 	user := entryToUser(searchResult.Entries[0])
 
+	tokenString, err := util.EncodeToken(user.Username, user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, "Error setting the authentication header")
+		return
+	}
+
+	c.Writer.Header().Set("x-auth-token", tokenString)
 	c.JSON(http.StatusOK, user)
 }
