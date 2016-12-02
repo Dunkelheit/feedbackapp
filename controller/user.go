@@ -13,7 +13,7 @@ import (
 // AllUsers retrieves all the available users
 func AllUsers(c *gin.Context) {
 	var users []model.User
-	database.DB.Find(&users)
+	database.DB.Order("first_name asc").Find(&users)
 	c.JSON(http.StatusOK, users)
 }
 

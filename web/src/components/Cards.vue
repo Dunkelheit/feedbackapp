@@ -49,6 +49,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-danger pull-left" v-if="card.id" v-on:click="deleteCard">Delete</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" v-on:click="persistCard">{{ card.id ? 'Update' : 'Create' }}</button>
                     </div>
@@ -105,6 +106,12 @@ export default {
             }).then(response => {
                 this.card.id = null;
                 this.card.title = '';
+                this.fetchCards();
+                $('#createModal').modal('hide');
+            });
+        },
+        deleteCard(event) {
+            axios.delete('/api/cards/' + this.card.id).then(response => {
                 this.fetchCards();
                 $('#createModal').modal('hide');
             });

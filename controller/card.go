@@ -12,7 +12,7 @@ import (
 // AllCards retrieves all the available cards
 func AllCards(c *gin.Context) {
 	var cards []model.Card
-	database.DB.Find(&cards)
+	database.DB.Order("title asc").Find(&cards)
 	c.JSON(http.StatusOK, cards)
 }
 
