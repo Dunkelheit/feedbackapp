@@ -1,5 +1,7 @@
 <template>
-    <h1>Welcome to the feedback app!</h1>
+    <div class="page-header">
+        <h1>Welcome to the Feedback App!</h1>
+    </div>
 </template>
 
 <script>

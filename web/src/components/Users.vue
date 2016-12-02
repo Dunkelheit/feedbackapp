@@ -1,23 +1,34 @@
 <template>
     <div>
+        <div class="page-header">
+            <h1>Users</h1>
+        </div>
         <div class="loading" v-if="loading">
             Loading...
         </div>
         <div v-if="error" class="error">
         </div>
         <div v-if="users.length > 0" class="content">
-            <dl>
-                <dt>Users</dt>
-                <dd>
-                    <ul v-for="user in users">
-                        <li>Name: {{user.fullName}}</li>
-                        <li>Email: {{user.email}}</li>
-                        <li>Job Title: {{user.jobTitle}}</li>
-                        <li>Department: {{user.department}}</li>
-                        <li>Company: {{user.company}}</li>
-                    </ul>
-                </dd>
-            </dl>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Title</th>
+                        <th>Department</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="user in users">
+                        <td>{{user.fullName}}</td>
+                        <td>{{user.email}}</td>
+                        <td>{{user.jobTitle}}</td>
+                        <td>{{user.department}}</td>
+                        <td>{{user.company}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>

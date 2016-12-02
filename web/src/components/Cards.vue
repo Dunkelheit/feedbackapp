@@ -1,32 +1,64 @@
 <template>
     <div>
-        <div class="loading" v-if="loading">
+        <div class="page-header">
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModal">Create</button>
+            <h1>Cards</h1>
+        </div>
+        <div v-if="loading">
             Loading...
         </div>
-        <div v-if="error" class="error">
+        <div v-if="error">
         </div>
-        <div v-if="cards.length > 0" class="content">
-            <dl>
-                <dt>Cards</dt>
-                <dd>
-                    <ul v-for="card in cards">
-                        <li>Title: {{card.title}}</li>
-                        <li>Category: {{card.category}}</li>
-                        <li><router-link :to="{name: 'cardById', params: { id: card.id }}">Edit</router-link></li>
-                    </ul>
-                </dd>
-            </dl>
+        <div v-if="cards.length > 0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="card in cards">
+                        <td>{{card.title}}</td>
+                        <td>{{card.category === 0 ? 'Positive' : 'Negative'}}</td>
+                        <td><a href="#" v-on:click="loadCard(card.id, $event)">Edit</a></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div>
-            <input v-model="card.id" type="hidden" />
-            <input v-model="card.title" placeholder="Title" />
-            <select v-model="card.category">
-                <option value="0">Positive</option>
-                <option value="1">Negative</option>
-            </select>
-            <button v-on:click="persistCard">{{ card.id ? 'Update' : 'Create' }}</button>
+
+        <div id="createModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Modal title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <input v-model="card.id" type="hidden" />
+                            <div class="form-group">
+                                <label for="inputTitle">Title</label>
+                                <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Title</label>
+                                <select class="form-control" v-model="card.category">
+                                    <option value="0">Positive</option>
+                                    <option value="1">Negative</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" v-on:click="persistCard">{{ card.id ? 'Update' : 'Create' }}</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    <div>
 </template>
 
 <script>
@@ -73,6 +105,7 @@ export default {
                 } else {
                     this.fetchCards();
                 }
+                $('#createModal').modal('hide');
             });
         },
         fetchCards() {
@@ -82,17 +115,18 @@ export default {
             axios.get('/api/cards').then(response => {
                 this.loading = false;
                 this.cards = response.data;
-                if (this.$route.params.id) {
-                    this.loadCard(parseInt(this.$route.params.id, 10));
-                }
             });
         },
-        loadCard(cardId) {
+        loadCard(cardId, event) {
+            if (event) {
+                event.preventDefault();
+            }
             this.cards.forEach(card => {
                 if (card.id === cardId) {
                     this.card.id = card.id;
                     this.card.title = card.title;
                     this.card.category = card.category;
+                    $('#createModal').modal('show');
                     return;
                 }
             });

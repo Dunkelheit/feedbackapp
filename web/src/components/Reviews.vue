@@ -1,5 +1,9 @@
 <template>
     <div>
+        <div class="page-header">
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModal">Create</button>
+            <h1>Reviews</h1>
+        </div>
         <div class="loading" v-if="loading">
             Loading...
         </div>

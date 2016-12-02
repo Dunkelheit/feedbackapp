@@ -13,9 +13,6 @@
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <router-link tag="li" to="/">
-                            <a>Home</a>
-                        </router-link>
                         <router-link tag="li" to="/cards">
                             <a>Cards</a>
                         </router-link>
