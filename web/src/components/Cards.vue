@@ -76,8 +76,6 @@ export default {
         };
     },
     created() {
-        console.log('LOCAL STORAGE');
-        console.log(localStorage);
         this.fetchCards();
     },
     watch: {
@@ -105,6 +103,10 @@ export default {
             axios[action](url, {
                 title: this.card.title,
                 category: parseInt(this.card.category, 10)
+            }, {
+                headers: {
+                    'x-auth-token': this.$store.state.loggedIn
+                }
             }).then(response => {
                 this.card.id = null;
                 this.card.title = '';
@@ -113,7 +115,11 @@ export default {
             });
         },
         deleteCard(event) {
-            axios.delete('/api/cards/' + this.card.id).then(response => {
+            axios.delete('/api/cards/' + this.card.id, {
+                headers: {
+                    'x-auth-token': this.$store.state.loggedIn
+                }
+            }).then(response => {
                 this.fetchCards();
                 $('#createModal').modal('hide');
             });
@@ -122,7 +128,11 @@ export default {
             this.error = null;
             this.cards = [];
             this.loading = true;
-            axios.get('/api/cards').then(response => {
+            axios.get('/api/cards', {
+                headers: {
+                    'x-auth-token': this.$store.state.loggedIn
+                }
+            }).then(response => {
                 this.loading = false;
                 this.cards = response.data;
             });

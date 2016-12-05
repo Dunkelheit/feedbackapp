@@ -1,13 +1,18 @@
 <template>
-    <div class="container">
-        <form class="form-signin">
-            <h2 class="form-signin-heading">Please sign in</h2>
-            <label for="inputUsername" class="sr-only">IceMobile username</label>
-            <input v-model="username" type="text" id="inputUsername" class="form-control" placeholder="IceMobile username" required autofocus>
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <button class="btn btn-lg btn-primary btn-block" type="submit" v-on:click="login">Sign in</button>
-        </form>
+    <div>
+        <div v-if="loggedIn" class="page-header">
+            <h1>Welecome to the Feedback App!</h1>
+        </div>
+        <div v-if="!loggedIn" class="container">
+            <form class="form-signin">
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <label for="inputUsername" class="sr-only">IceMobile username</label>
+                <input v-model="username" type="text" id="inputUsername" class="form-control" placeholder="IceMobile username" required autofocus>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" v-on:click="login">Sign in</button>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -23,6 +28,11 @@ export default {
             password: null
         };
     },
+    computed: {
+        loggedIn() {
+            return this.$store.state.loggedIn;
+        }
+    },
     methods: {
         login() {
             axios.post('/api/login', {
@@ -30,6 +40,9 @@ export default {
                 password: this.password
             }).then(response => {
                 console.log(response);
+                const token = response.headers['x-auth-token'];
+                this.$store.commit('login', token);
+                localStorage.feedbackAppToken = token;
             })
         }
     }
@@ -38,12 +51,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-body {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    background-color: #eee;
-}
-
 .form-signin {
     max-width: 330px;
     padding: 15px;

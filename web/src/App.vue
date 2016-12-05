@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav v-if="loggedIn" class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -23,6 +23,9 @@
                             <a>Reviews</a>
                         </router-link>
                     </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" v-on:click="logout">Logout</a></li>
+                    </ul>
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
@@ -35,7 +38,16 @@
 <script>
 export default {
     name: 'app',
-    components: {
+    methods: {
+        logout() {
+            this.$store.commit('logout');
+            delete localStorage.feedbackAppToken;
+        }
+    },
+    computed: {
+        loggedIn() {
+            return this.$store.state.loggedIn;
+        }
     }
 }
 </script>

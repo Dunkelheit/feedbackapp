@@ -89,13 +89,21 @@ export default {
             axios.post('/api/reviews', {
                 reviewerId: this.review.reviewerId,
                 revieweeId: this.review.revieweeId
+            }, {
+                headers: {
+                    'x-auth-token': this.$store.state.loggedIn
+                }
             }).then(this.fetchReviews);
         },
         fetchReviews() {
             this.error = null;
             this.reviews = [];
             this.loading = true;
-            axios.get('/api/reviews').then(response => {
+            axios.get('/api/reviews', {
+                headers: {
+                    'x-auth-token': this.$store.state.loggedIn
+                }
+            }).then(response => {
                 this.reviews = response.data;
                 this.loading = false;
                 $('#createModal').modal('hide');
@@ -107,8 +115,16 @@ export default {
             this.users = [];
             this.loading = true;
             axios.all([
-                axios.get('/api/reviews'),
-                axios.get('/api/users')
+                axios.get('/api/reviews', {
+                    headers: {
+                        'x-auth-token': this.$store.state.loggedIn
+                    }
+                }),
+                axios.get('/api/users', {
+                    headers: {
+                        'x-auth-token': this.$store.state.loggedIn
+                    }
+                })
             ]).then(axios.spread((reviews, users) => {
                 this.reviews = reviews.data;
                 this.users = users.data;
