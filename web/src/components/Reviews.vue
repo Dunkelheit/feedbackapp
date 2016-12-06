@@ -1,13 +1,14 @@
 <template>
     <div>
         <div class="page-header">
-            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#createModal">Create</button>
+            <button type="button" class="btn btn-primary pull-right" v-on:click="openModal">Create</button>
             <h1>Reviews</h1>
         </div>
         <div class="loading" v-if="loading">
             Loading...
         </div>
-        <div v-if="error" class="error">
+        <div v-if="error" class="alert alert-danger" role="alert">
+            <strong>Oh snap!</strong> Something went wrong.
         </div>
         <div v-if="reviews.length > 0" class="content">
             <table class="table table-striped">
@@ -85,7 +86,17 @@ export default {
         '$route': 'fetchReviewsAndUsers'
     },
     methods: {
+        openModal(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            this.review.id = null;
+            this.review.reviewerId = null;
+            this.review.revieweeId = null;
+            $('#createModal').modal('show');
+        },
         createReview() {
+            this.error = null;
             axios.post('/api/reviews', {
                 reviewerId: this.review.reviewerId,
                 revieweeId: this.review.revieweeId
@@ -93,7 +104,10 @@ export default {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }
-            }).then(this.fetchReviews);
+            }).then(this.fetchReviews).catch(error => {
+                this.error = error;
+                $('#createModal').modal('hide');
+            });
         },
         fetchReviews() {
             this.error = null;
@@ -107,7 +121,10 @@ export default {
                 this.reviews = response.data;
                 this.loading = false;
                 $('#createModal').modal('hide');
-            })
+            }).catch(error => {
+                this.error = error;
+                $('#createModal').modal('hide');
+            });
         },
         fetchReviewsAndUsers() {
             this.error = null;
@@ -129,7 +146,13 @@ export default {
                 this.reviews = reviews.data;
                 this.users = users.data;
                 this.loading = false;
-            }));
+            })).catch(error => {
+                if (error.response.status === 401) {
+                    this.$router.replace('/');
+                } else {
+                    this.error = error;
+                }
+            });
         }
     }
 }

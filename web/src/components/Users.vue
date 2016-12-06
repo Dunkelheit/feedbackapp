@@ -6,7 +6,8 @@
         <div class="loading" v-if="loading">
             Loading...
         </div>
-        <div v-if="error" class="error">
+        <div v-if="error" class="alert alert-danger" role="alert">
+            <strong>Oh snap!</strong> Something went wrong.
         </div>
         <div v-if="users.length > 0" class="content">
             <table class="table table-striped">
@@ -62,6 +63,12 @@ export default {
             }).then(response => {
                 this.loading = false;
                 this.users = response.data;
+            }).catch(error => {
+                if (error.response.status === 401) {
+                    this.$router.replace('/');
+                } else {
+                    this.error = error;
+                }
             });
         }
     }

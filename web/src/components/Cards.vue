@@ -7,7 +7,8 @@
         <div class="loading" v-if="loading">
             Loading...
         </div>
-        <div v-if="error">
+        <div v-if="error" class="alert alert-danger" role="alert">
+            <strong>Oh snap!</strong> Something went wrong.
         </div>
         <div v-if="cards.length > 0">
             <table class="table table-striped">
@@ -100,6 +101,7 @@ export default {
                 action = 'post';
                 url = '/api/cards';
             }
+            this.error = null;
             axios[action](url, {
                 title: this.card.title,
                 category: parseInt(this.card.category, 10)
@@ -112,15 +114,22 @@ export default {
                 this.card.title = '';
                 this.fetchCards();
                 $('#createModal').modal('hide');
+            }).catch(error => {
+                this.error = error;
+                $('#createModal').modal('hide');
             });
         },
         deleteCard(event) {
+            this.error = null;
             axios.delete('/api/cards/' + this.card.id, {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }
             }).then(response => {
                 this.fetchCards();
+                $('#createModal').modal('hide');
+            }).catch(error => {
+                this.error = error;
                 $('#createModal').modal('hide');
             });
         },
@@ -135,6 +144,12 @@ export default {
             }).then(response => {
                 this.loading = false;
                 this.cards = response.data;
+            }).catch(error => {
+                if (error.response.status === 401) {
+                    this.$router.replace('/');
+                } else {
+                    this.error = error;
+                }
             });
         },
         loadCard(cardId, event) {
