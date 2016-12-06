@@ -4,14 +4,17 @@
             <h1>Welecome to the Feedback App!</h1>
         </div>
         <div v-if="!loggedIn" class="container">
-            <form class="form-signin">
-                <h2 class="form-signin-heading">Please sign in</h2>
+            <form v-on:submit="login" class="form-signin">
+                <h2 class="form-signin-heading">The Feedback App</h2>
                 <label for="inputUsername" class="sr-only">IceMobile username</label>
                 <input v-model="username" type="text" id="inputUsername" class="form-control" placeholder="IceMobile username" required autofocus>
                 <label for="inputPassword" class="sr-only">Password</label>
                 <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                <button class="btn btn-lg btn-primary btn-block" type="submit" v-on:click="login">Sign in</button>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
             </form>
+            <div v-if="error" class="alert alert-danger" role="alert">
+                <strong>Oh snap!</strong> Looks like your credentials are not correct.
+            </div>
         </div>
     </div>
 </template>
@@ -35,15 +38,17 @@ export default {
     },
     methods: {
         login() {
+            this.error = null;
             axios.post('/api/login', {
                 username: this.username,
                 password: this.password
             }).then(response => {
-                console.log(response);
                 const token = response.headers['x-auth-token'];
                 this.$store.commit('login', token);
                 localStorage.feedbackAppToken = token;
-            })
+            }).catch(error => {
+                this.error = error;
+            });
         }
     }
 }
@@ -51,6 +56,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.alert {
+    max-width: 430px;
+    margin: 0 auto;
+}
 .form-signin {
     max-width: 330px;
     padding: 15px;
