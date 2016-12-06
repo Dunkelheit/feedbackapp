@@ -35,8 +35,8 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">{{ review.id ? 'Update' : 'Create' }} review</h4>
                     </div>
-                    <div class="modal-body">
-                        <form>
+                    <form v-on:submit="createReview">
+                        <div class="modal-body">
                             <input v-model="review.id" type="hidden" />
                             <div class="form-group">
                                 <label for="inputReviewer">Reviewer</label>
@@ -50,12 +50,12 @@
                                     <option v-for="user in users" v-bind:value="user.id">{{user.fullName}}</option>
                                 </select>
                             </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" v-on:click="createReview">{{ review.id ? 'Update' : 'Create' }}</button>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">{{ review.id ? 'Update' : 'Create' }}</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -148,7 +148,7 @@ export default {
                 this.loading = false;
             })).catch(error => {
                 if (error.response.status === 401) {
-                    this.$router.replace('/');
+                    this.$router.replace({ name: 'home' });
                 } else {
                     this.error = error;
                 }

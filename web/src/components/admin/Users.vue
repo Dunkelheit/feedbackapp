@@ -65,7 +65,7 @@ export default {
                 this.users = response.data;
             }).catch(error => {
                 if (error.response.status === 401) {
-                    this.$router.replace('/');
+                    this.$router.replace({ name: 'home' });
                 } else {
                     this.error = error;
                 }

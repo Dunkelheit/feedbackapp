@@ -33,27 +33,27 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">{{ card.id ? 'Update' : 'Create' }} card</h4>
                     </div>
-                    <div class="modal-body">
-                        <form>
-                            <input v-model="card.id" type="hidden" />
-                            <div class="form-group">
-                                <label for="inputTitle">Title</label>
-                                <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here" required autofocus>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputCategory">Category</label>
-                                <select id="inputCategory" class="form-control" v-model="card.category" required>
-                                    <option value="0">Positive</option>
-                                    <option value="1">Negative</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger pull-left" v-if="card.id" v-on:click="deleteCard">Delete</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" v-on:click="persistCard">{{ card.id ? 'Update' : 'Create' }}</button>
-                    </div>
+                    <form v-on:submit="persistCard">
+                        <div class="modal-body">
+                                <input v-model="card.id" type="hidden" />
+                                <div class="form-group">
+                                    <label for="inputTitle">Title</label>
+                                    <input type="text" v-model="card.title" class="form-control" id="inputTitle" placeholder="Type the name of the card here" required autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputCategory">Category</label>
+                                    <select id="inputCategory" class="form-control" v-model="card.category" required>
+                                        <option value="0">Positive</option>
+                                        <option value="1">Negative</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger pull-left" v-if="card.id" v-on:click="deleteCard">Delete</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">{{ card.id ? 'Update' : 'Create' }}</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -146,7 +146,7 @@ export default {
                 this.cards = response.data;
             }).catch(error => {
                 if (error.response.status === 401) {
-                    this.$router.replace('/');
+                    this.$router.replace({ name: 'home' });
                 } else {
                     this.error = error;
                 }
