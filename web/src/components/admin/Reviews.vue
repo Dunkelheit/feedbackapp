@@ -97,7 +97,7 @@ export default {
         },
         createReview() {
             this.error = null;
-            axios.post('/api/reviews', {
+            axios.post('/api/admin/reviews', {
                 reviewerId: this.review.reviewerId,
                 revieweeId: this.review.revieweeId
             }, {
@@ -113,7 +113,7 @@ export default {
             this.error = null;
             this.reviews = [];
             this.loading = true;
-            axios.get('/api/reviews', {
+            axios.get('/api/admin/reviews', {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }
@@ -132,12 +132,12 @@ export default {
             this.users = [];
             this.loading = true;
             axios.all([
-                axios.get('/api/reviews', {
+                axios.get('/api/admin/reviews', {
                     headers: {
                         'x-auth-token': this.$store.state.loggedIn
                     }
                 }),
-                axios.get('/api/users', {
+                axios.get('/api/admin/users', {
                     headers: {
                         'x-auth-token': this.$store.state.loggedIn
                     }

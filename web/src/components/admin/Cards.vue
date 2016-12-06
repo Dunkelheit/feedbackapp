@@ -96,10 +96,10 @@ export default {
             var url;
             if (this.card.id !== null) {
                 action = 'put';
-                url = '/api/cards/' + this.card.id;
+                url = '/api/admin/cards/' + this.card.id;
             } else {
                 action = 'post';
-                url = '/api/cards';
+                url = '/api/admin/cards';
             }
             this.error = null;
             axios[action](url, {
@@ -121,7 +121,7 @@ export default {
         },
         deleteCard(event) {
             this.error = null;
-            axios.delete('/api/cards/' + this.card.id, {
+            axios.delete('/api/admin/cards/' + this.card.id, {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }
@@ -137,7 +137,7 @@ export default {
             this.error = null;
             this.cards = [];
             this.loading = true;
-            axios.get('/api/cards', {
+            axios.get('/api/admin/cards', {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }

@@ -30,6 +30,25 @@ func AllReviews(c *gin.Context) {
 	c.JSON(http.StatusOK, reviews)
 }
 
+// MyReviews shows only my reviews
+func MyReviews(c *gin.Context) {
+	userName, what := c.Get("username")
+	fmt.Println("Getting username in shenanigans")
+	fmt.Println(userName)
+	fmt.Println(what)
+
+	var reviews []model.Review
+
+	if err := database.DB.Joins("JOIN users ON users.id = reviews.reviewer_id").
+		Where("users.username = ?", userName).Preload("Reviewer").
+		Preload("Reviewee").Preload("Cards").Find(&reviews).Error; err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, reviews)
+}
+
 // CreateReview creates a review
 func CreateReview(c *gin.Context) {
 	type reviewForm struct {
@@ -42,8 +61,6 @@ func CreateReview(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	fmt.Println(in.ReviewerID)
-	fmt.Println(in.RevieweeID)
 	review := &model.Review{
 		Remark:     "Lorem ipsum",
 		Completed:  false,

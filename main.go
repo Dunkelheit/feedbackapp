@@ -5,6 +5,8 @@ import (
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
+	"fmt"
+
 	"github.com/Dunkelheit/feedbackapp/controller"
 	"github.com/Dunkelheit/feedbackapp/database"
 	"github.com/Dunkelheit/feedbackapp/model"
@@ -33,6 +35,8 @@ func AuthRequired() gin.HandlerFunc {
 			return
 		}
 		c.Set("username", username)
+		fmt.Println("Setting username in middleware")
+		fmt.Println(username)
 		c.Set("mail", mail)
 		c.Next()
 	}
@@ -42,26 +46,29 @@ func main() {
 	router := gin.Default()
 
 	apiRoutes := router.Group("/api")
-
 	apiRoutes.POST("/login", controller.Login)
 
-	userRoutes := apiRoutes.Group("/users").Use(AuthRequired())
+	myRoutes := apiRoutes.Group("/my").Use(AuthRequired())
+	{
+		myRoutes.GET("/reviews", controller.MyReviews).Use(AuthRequired())
+	}
+
+	adminRoutes := apiRoutes.Group("/admin")
+	userRoutes := adminRoutes.Group("/users").Use(AuthRequired())
 	{
 		userRoutes.GET("", controller.AllUsers)
 		userRoutes.GET("/:userId", controller.UserByID)
 		userRoutes.PUT("/:userId", ping)
 		userRoutes.DELETE("/:userId", controller.DeleteUser)
 	}
-
-	cardRoutes := apiRoutes.Group("/cards").Use(AuthRequired())
+	cardRoutes := adminRoutes.Group("/cards").Use(AuthRequired())
 	{
 		cardRoutes.GET("", controller.AllCards)
 		cardRoutes.POST("", controller.CreateCard)
 		cardRoutes.PUT("/:cardId", controller.UpdateCard)
 		cardRoutes.DELETE("/:cardId", controller.DeleteCard)
 	}
-
-	reviewRoutes := apiRoutes.Group("/reviews").Use(AuthRequired())
+	reviewRoutes := adminRoutes.Group("/reviews").Use(AuthRequired())
 	{
 		reviewRoutes.GET("", controller.AllReviews)
 		reviewRoutes.POST("", controller.CreateReview)
@@ -71,7 +78,6 @@ func main() {
 	}
 
 	router.StaticFile("/", "./web/dist/index.html")
-	router.StaticFile("/admin", "./web/dist/index.html")
 	router.Static("/static", "./web/dist/static/")
 
 	router.Run() // listen and server on 0.0.0.0:8080
