@@ -41,11 +41,52 @@ func buildSearchRequest(filter string) *ldap.SearchRequest {
 		0, 0, false, filter, ldapAttributes, nil)
 }
 
+// IsAdmin whether I'm admin or not
+func IsAdmin(user *model.User) bool {
+	var roles []model.Role
+	database.DB.Where("role = ? AND username = ?", "admin", user.Username).Find(&roles)
+	return len(roles) == 1
+}
+
 func filterEntriesWithoutMail(entries []*ldap.Entry) []*ldap.Entry {
 	result := make([]*ldap.Entry, 0)
 	for _, entry := range entries {
 		if mail := entry.GetRawAttributeValue(ldapAttrMail); len(mail) > 0 {
-			result = append(result, entry)
+			var mailString = string(mail[:])
+			switch mailString {
+			case "andrew.gerssen@icemobile.com":
+				fallthrough
+			case "arjo.hooimeijer@icemobile.com":
+				fallthrough
+			case "arturo.martinez@icemobile.com":
+				fallthrough
+			case "bart.soeters@icemobile.com":
+				fallthrough
+			case "caio.borges@icemobile.com":
+				fallthrough
+			case "erik.brom@icemobile.com":
+				fallthrough
+			case "hei-yu.tang@icemobile.com":
+				fallthrough
+			case "kiki.ottenhoff@icemobile.com":
+				fallthrough
+			case "maja.adjioska@icemobile.com":
+				fallthrough
+			case "marcela.brandi@icemobile.com":
+				fallthrough
+			case "marco.silva@icemobile.com":
+				fallthrough
+			case "paul.groothuis@icemobile.com":
+				fallthrough
+			case "rajesh.rao@icemobile.com":
+				fallthrough
+			case "rosa.vancolmjon@icemobile.com":
+				fallthrough
+			case "thomas.macquart@icemobile.com":
+				fallthrough
+			case "thomas.pienaar@icemobile.com":
+				result = append(result, entry)
+			}
 		}
 	}
 	return result
@@ -84,6 +125,33 @@ func preloadLDAPUsers(l *ldap.Conn) (int, error) {
 	for _, user := range users {
 		database.DB.Create(entryToUser(user))
 	}
+
+	var newUsers []model.User
+	database.DB.Order("first_name asc").Find(&newUsers)
+
+	for _, reviewer := range newUsers {
+		for _, reviewee := range newUsers {
+			if reviewer.ID != reviewee.ID {
+				database.DB.Create(&model.Review{
+					Remark:     "Lorem ipsum",
+					Completed:  false,
+					ReviewerID: reviewer.ID,
+					RevieweeID: reviewee.ID,
+					Cards:      []model.Card{},
+				})
+			}
+		}
+	}
+
+	database.DB.Create(&model.Role{
+		Username: "arturo.martinez",
+		Role:     "admin",
+	})
+	database.DB.Create(&model.Role{
+		Username: "rosa.vancolmjon",
+		Role:     "admin",
+	})
+
 	return len(users), nil
 }
 
@@ -138,6 +206,13 @@ func Login(c *gin.Context) {
 	}
 
 	user := entryToUser(searchResult.Entries[0])
+	user.Role = "user"
+	isAdmin := IsAdmin(user)
+	fmt.Println("IS ADMIN")
+	fmt.Println(isAdmin)
+	if isAdmin {
+		user.Role = "admin"
+	}
 
 	tokenString, err := util.EncodeToken(user.Username, user.Email)
 	if err != nil {

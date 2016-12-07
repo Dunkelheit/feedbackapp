@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="page-header">
-            <h1>Users</h1>
+            <h1>My Reviews</h1>
         </div>
         <div class="loading" v-if="loading">
             Loading...
@@ -9,26 +9,18 @@
         <div v-if="error" class="alert alert-danger" role="alert">
             <strong>Oh snap!</strong> Something went wrong.
         </div>
-        <div v-if="users.length > 0" class="content">
+        <div v-if="reviews.length > 0" class="content">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Title</th>
-                        <th>Department</th>
-                        <th>Company</th>
+                        <th>Your reviewee</th>
+                        <th>Completed</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="user in users">
-                        <td>{{user.fullName}}</td>
-                        <td>{{user.username}}</td>
-                        <td>{{user.email}}</td>
-                        <td>{{user.jobTitle}}</td>
-                        <td>{{user.department}}</td>
-                        <td>{{user.company}}</td>
+                    <tr v-for="review in reviews">
+                        <td><a href="#">{{review.reviewee.fullName}}</a></td>
+                        <td>{{review.completed ? 'Yes' : 'No'}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -39,38 +31,34 @@
 <script>
 import axios from 'axios';
 export default {
-    name: 'users',
+    name: 'reviews',
     data () {
         return {
             loading: false,
-            users: [],
+            reviews: [],
             error: null
         };
     },
     created() {
-        this.fetchUsers();
+        this.fetchMyReviews();
     },
     watch: {
-        '$route': 'fetchUsers'
+        '$route': 'fetchMyReviews'
     },
     methods: {
-        fetchUsers() {
+        fetchMyReviews() {
             this.error = null;
-            this.users = [];
+            this.reviews = [];
             this.loading = true;
-            axios.get('/api/admin/users', {
+            axios.get('/api/my/reviews', {
                 headers: {
                     'x-auth-token': this.$store.state.loggedIn
                 }
             }).then(response => {
+                this.reviews = response.data;
                 this.loading = false;
-                this.users = response.data;
             }).catch(error => {
-                if (error.response.status === 401) {
-                    this.$router.replace({ name: 'home' });
-                } else {
-                    this.error = error;
-                }
+                this.error = error;
             });
         }
     }

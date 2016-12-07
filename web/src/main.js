@@ -4,9 +4,10 @@ import Vuex from 'vuex';
 
 import App from './App';
 import Home from './components/Home';
-import Cards from './components/admin/Cards';
-import Users from './components/admin/Users';
-import Reviews from './components/admin/Reviews';
+import MyReviews from './components/MyReviews';
+import AdminCards from './components/admin/Cards';
+import AdminUsers from './components/admin/Users';
+import AdminReviews from './components/admin/Reviews';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
@@ -16,29 +17,36 @@ const routes = [{
     component: Home,
     name: 'home'
 }, {
+    path: '/my/reviews',
+    component: MyReviews,
+    name: 'myReviews'
+}, {
     path: '/admin/cards',
-    component: Cards,
+    component: AdminCards,
     name: 'adminCards'
 }, {
     path: '/admin/users',
-    component: Users,
+    component: AdminUsers,
     name: 'adminUsers'
 }, {
     path: '/admin/reviews',
-    component: Reviews,
+    component: AdminReviews,
     name: 'adminReviews'
 }];
 
 const store = new Vuex.Store({
     state: {
-        loggedIn: localStorage.feedbackAppToken
+        loggedIn: localStorage.feedbackAppToken,
+        role: localStorage.feedbackAppRole
     },
     mutations: {
-        login(state, token) {
-            state.loggedIn = token;
+        login(state, data) {
+            state.loggedIn = data.token;
+            state.role = data.role;
         },
         logout(state) {
             state.loggedIn = false;
+            state.role = 'user';
         }
     }
 });

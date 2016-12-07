@@ -13,13 +13,16 @@
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <router-link tag="li" :to="{name: 'adminCards'}">
+                        <router-link tag="li" :to="{name: 'myReviews'}">
+                            <a>My Reviews</a>
+                        </router-link>
+                        <router-link v-if="isAdmin" tag="li" :to="{name: 'adminCards'}">
                             <a>Cards</a>
                         </router-link>
-                        <router-link tag="li" :to="{name: 'adminUsers'}">
+                        <router-link v-if="isAdmin" tag="li" :to="{name: 'adminUsers'}">
                             <a>Users</a>
                         </router-link>
-                        <router-link tag="li" :to="{name: 'adminReviews'}">
+                        <router-link v-if="isAdmin" tag="li" :to="{name: 'adminReviews'}">
                             <a>Reviews</a>
                         </router-link>
                     </ul>
@@ -42,11 +45,15 @@ export default {
         logout() {
             this.$store.commit('logout');
             delete localStorage.feedbackAppToken;
+            delete localStorage.feedbackAppRole;
         }
     },
     computed: {
         loggedIn() {
             return this.$store.state.loggedIn;
+        },
+        isAdmin() {
+            return this.$store.state.role === 'admin';
         }
     }
 }

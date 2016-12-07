@@ -1,6 +1,9 @@
 package database
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/Dunkelheit/feedbackapp/model"
+	"github.com/jinzhu/gorm"
+)
 
 // DB is the database instance
 var DB *gorm.DB
@@ -16,16 +19,14 @@ func OpenDB() {
 
 	DB.LogMode(true)
 
-	/*
-		DB.DropTable(&model.Review{}, &model.Card{}, &model.User{})
-		DB.AutoMigrate(&model.Card{}, &model.User{}, &model.Review{})
+	DB.DropTable(&model.Review{}, &model.Card{}, &model.User{}, &model.Role{})
+	DB.AutoMigrate(&model.Card{}, &model.User{}, &model.Review{}, &model.Role{})
 
-		DB.Model(&model.Review{}).AddForeignKey("reviewer_id", "users(id)", "CASCADE", "CASCADE")
-		DB.Model(&model.Review{}).AddForeignKey("reviewee_id", "users(id)", "CASCADE", "CASCADE")
+	DB.Model(&model.Review{}).AddForeignKey("reviewer_id", "users(id)", "CASCADE", "CASCADE")
+	DB.Model(&model.Review{}).AddForeignKey("reviewee_id", "users(id)", "CASCADE", "CASCADE")
 
-		DB.Create(&model.Card{Title: "Great moves", Category: model.CardCategoryPositive})
-		DB.Create(&model.Card{Title: "Computer hacking skills", Category: model.CardCategoryPositive})
-		DB.Create(&model.Card{Title: "Lazy eye", Category: model.CardCategoryNegative})
-		DB.Create(&model.Card{Title: "Stinky feet", Category: model.CardCategoryNegative})
-	*/
+	DB.Create(&model.Card{Title: "Great moves", Category: model.CardCategoryPositive})
+	DB.Create(&model.Card{Title: "Computer hacking skills", Category: model.CardCategoryPositive})
+	DB.Create(&model.Card{Title: "Lazy eye", Category: model.CardCategoryNegative})
+	DB.Create(&model.Card{Title: "Stinky feet", Category: model.CardCategoryNegative})
 }

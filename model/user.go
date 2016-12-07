@@ -12,4 +12,5 @@ type User struct {
 	Company    string `json:"company"`
 	Email      string `json:"email" gorm:"unique_index"`
 	Avatar     string `json:"avatar"`
+	Role       string `json:"role" gorm:"-"`
 }

@@ -34,6 +34,9 @@ export default {
     computed: {
         loggedIn() {
             return this.$store.state.loggedIn;
+        },
+        isAdmin() {
+            return this.$store.state.role === 'admin';
         }
     },
     methods: {
@@ -44,8 +47,15 @@ export default {
                 password: this.password
             }).then(response => {
                 const token = response.headers['x-auth-token'];
-                this.$store.commit('login', token);
+                const role = response.data.role;
+                this.$store.commit('login', {
+                    token: token,
+                    role: role
+                });
                 localStorage.feedbackAppToken = token;
+                localStorage.feedbackAppRole = role;
+                this.username = null;
+                this.password = null;
             }).catch(error => {
                 this.error = error;
             });
