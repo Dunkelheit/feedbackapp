@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import App from './App';
 import Home from './components/Home';
 import MyReviews from './components/MyReviews';
+import DoReview from './components/DoReview';
 import AdminCards from './components/admin/Cards';
 import AdminUsers from './components/admin/Users';
 import AdminReviews from './components/admin/Reviews';
@@ -20,6 +21,10 @@ const routes = [{
     path: '/my/reviews',
     component: MyReviews,
     name: 'myReviews'
+}, {
+    path: '/my/reviews/:id',
+    component: DoReview,
+    name: 'doReview'
 }, {
     path: '/admin/cards',
     component: AdminCards,

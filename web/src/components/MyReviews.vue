@@ -19,7 +19,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="review in reviews">
-                        <td><a href="#">{{review.reviewee.fullName}}</a></td>
+                        <td><router-link :to="{ name: 'doReview', params: { id: review.id }}">{{review.reviewee.fullName}}</router-link></a></td>
                         <td>{{review.completed ? 'Yes' : 'No'}}</td>
                     </tr>
                 </tbody>
